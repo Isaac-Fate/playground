@@ -2,7 +2,7 @@ import Database from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import { documents } from "./schema";
 import { mkdirSync } from "node:fs";
-import { hashContent } from "../../lib/hash";
+import { computeChecksum } from "../../lib/checksum";
 
 mkdirSync("data", { recursive: true });
 
@@ -27,8 +27,7 @@ if (existing.length === 0) {
     {
       id: "3",
       title: "Ideas",
-      content:
-        "- Implement dark mode\n- Add markdown support\n- Export to PDF",
+      content: "- Implement dark mode\n- Add markdown support\n- Export to PDF",
     },
   ];
 
@@ -36,7 +35,7 @@ if (existing.length === 0) {
     .values(
       seeds.map((s) => ({
         ...s,
-        checksum: hashContent(s.content),
+        checksum: computeChecksum(s.content),
       })),
     )
     .run();

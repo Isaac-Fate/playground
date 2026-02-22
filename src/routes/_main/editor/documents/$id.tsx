@@ -13,9 +13,7 @@ function DocumentEditorPage() {
       <div className="mx-auto w-full max-w-4xl space-y-4">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold tracking-tight">Minimal Editor</h1>
-          <p className="text-muted-foreground text-sm">
-            Editing Document {id}
-          </p>
+          <p className="text-muted-foreground text-sm">Editing Document {id}</p>
         </div>
 
         <DocumentEditor documentId={id} />

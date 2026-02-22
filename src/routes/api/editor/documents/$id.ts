@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { eq } from "drizzle-orm";
 import { db } from "@/server/db";
 import { documents } from "@/server/db/schema";
-import { hashContent } from "@/lib/hash";
+import { computeChecksum } from "@/lib/checksum";
 
 export const Route = createFileRoute("/api/editor/documents/$id")({
   server: {
@@ -20,12 +20,21 @@ export const Route = createFileRoute("/api/editor/documents/$id")({
       },
       PUT: async ({ params, request }) => {
         const body = await request.json();
-        const content = body.content ?? null;
-        const title = body.title ?? null;
-        const checksum = content != null ? hashContent(content) : null;
+        const existing = db
+          .select()
+          .from(documents)
+          .where(eq(documents.id, params.id))
+          .get();
+        if (!existing) {
+          return new Response("Document not found", { status: 404 });
+        }
 
-        const updated = db
-          .update(documents)
+        const content =
+          "content" in body ? (body.content ?? null) : existing.content;
+        const title = "title" in body ? (body.title ?? null) : existing.title;
+        const checksum = content != null ? computeChecksum(content) : null;
+
+        db.update(documents)
           .set({
             title,
             content,
@@ -33,13 +42,11 @@ export const Route = createFileRoute("/api/editor/documents/$id")({
             updatedAt: new Date(),
           })
           .where(eq(documents.id, params.id))
-          .returning()
-          .get();
+          .run();
 
-        if (!updated) {
-          return new Response("Document not found", { status: 404 });
-        }
-        return Response.json(updated);
+        return Response.json({
+          id: params.id,
+        });
       },
     },
   },
