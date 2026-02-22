@@ -13,7 +13,6 @@ import { Route as MainRouteImport } from './routes/_main'
 import { Route as MainIndexRouteImport } from './routes/_main/index'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as MainEditorIndexRouteImport } from './routes/_main/editor/index'
-import { Route as MainDemoTanstackQueryRouteImport } from './routes/_main/demo/tanstack-query'
 import { Route as ApiEditorDocumentsIndexRouteImport } from './routes/api/editor/documents/index'
 import { Route as ApiEditorDocumentsIdRouteImport } from './routes/api/editor/documents/$id'
 import { Route as MainEditorDocumentsIdRouteImport } from './routes/_main/editor/documents/$id'
@@ -37,11 +36,6 @@ const MainEditorIndexRoute = MainEditorIndexRouteImport.update({
   path: '/editor/',
   getParentRoute: () => MainRoute,
 } as any)
-const MainDemoTanstackQueryRoute = MainDemoTanstackQueryRouteImport.update({
-  id: '/demo/tanstack-query',
-  path: '/demo/tanstack-query',
-  getParentRoute: () => MainRoute,
-} as any)
 const ApiEditorDocumentsIndexRoute = ApiEditorDocumentsIndexRouteImport.update({
   id: '/api/editor/documents/',
   path: '/api/editor/documents/',
@@ -61,7 +55,6 @@ const MainEditorDocumentsIdRoute = MainEditorDocumentsIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof MainIndexRoute
   '/api/health': typeof ApiHealthRoute
-  '/demo/tanstack-query': typeof MainDemoTanstackQueryRoute
   '/editor/': typeof MainEditorIndexRoute
   '/editor/documents/$id': typeof MainEditorDocumentsIdRoute
   '/api/editor/documents/$id': typeof ApiEditorDocumentsIdRoute
@@ -70,7 +63,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/api/health': typeof ApiHealthRoute
   '/': typeof MainIndexRoute
-  '/demo/tanstack-query': typeof MainDemoTanstackQueryRoute
   '/editor': typeof MainEditorIndexRoute
   '/editor/documents/$id': typeof MainEditorDocumentsIdRoute
   '/api/editor/documents/$id': typeof ApiEditorDocumentsIdRoute
@@ -81,7 +73,6 @@ export interface FileRoutesById {
   '/_main': typeof MainRouteWithChildren
   '/api/health': typeof ApiHealthRoute
   '/_main/': typeof MainIndexRoute
-  '/_main/demo/tanstack-query': typeof MainDemoTanstackQueryRoute
   '/_main/editor/': typeof MainEditorIndexRoute
   '/_main/editor/documents/$id': typeof MainEditorDocumentsIdRoute
   '/api/editor/documents/$id': typeof ApiEditorDocumentsIdRoute
@@ -92,7 +83,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/api/health'
-    | '/demo/tanstack-query'
     | '/editor/'
     | '/editor/documents/$id'
     | '/api/editor/documents/$id'
@@ -101,7 +91,6 @@ export interface FileRouteTypes {
   to:
     | '/api/health'
     | '/'
-    | '/demo/tanstack-query'
     | '/editor'
     | '/editor/documents/$id'
     | '/api/editor/documents/$id'
@@ -111,7 +100,6 @@ export interface FileRouteTypes {
     | '/_main'
     | '/api/health'
     | '/_main/'
-    | '/_main/demo/tanstack-query'
     | '/_main/editor/'
     | '/_main/editor/documents/$id'
     | '/api/editor/documents/$id'
@@ -155,13 +143,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainEditorIndexRouteImport
       parentRoute: typeof MainRoute
     }
-    '/_main/demo/tanstack-query': {
-      id: '/_main/demo/tanstack-query'
-      path: '/demo/tanstack-query'
-      fullPath: '/demo/tanstack-query'
-      preLoaderRoute: typeof MainDemoTanstackQueryRouteImport
-      parentRoute: typeof MainRoute
-    }
     '/api/editor/documents/': {
       id: '/api/editor/documents/'
       path: '/api/editor/documents'
@@ -188,14 +169,12 @@ declare module '@tanstack/react-router' {
 
 interface MainRouteChildren {
   MainIndexRoute: typeof MainIndexRoute
-  MainDemoTanstackQueryRoute: typeof MainDemoTanstackQueryRoute
   MainEditorIndexRoute: typeof MainEditorIndexRoute
   MainEditorDocumentsIdRoute: typeof MainEditorDocumentsIdRoute
 }
 
 const MainRouteChildren: MainRouteChildren = {
   MainIndexRoute: MainIndexRoute,
-  MainDemoTanstackQueryRoute: MainDemoTanstackQueryRoute,
   MainEditorIndexRoute: MainEditorIndexRoute,
   MainEditorDocumentsIdRoute: MainEditorDocumentsIdRoute,
 }

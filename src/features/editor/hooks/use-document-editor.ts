@@ -1,135 +1,135 @@
 import { useRef, useCallback, useEffect, useState, useMemo } from "react";
-import { useSaveDocumentContent } from "../services/use-save-document-content";
+import { useSaveDocument } from "../services/use-save-document";
 import { useGetDocument } from "../services/use-get-document";
 import { computeChecksum } from "@/lib/checksum";
 
 const AUTO_SAVE_INTERVAL_MS = 10_000;
-
-// Auto-save is suppressed while the user is actively typing.
-// "Idle" = no edits for at least this many milliseconds.
 const IDLE_THRESHOLD_MS = 2_000;
+
+/**
+ * Single enum that replaces multiple boolean flags (isLoading, isSaving, isDirty).
+ * Components can switch on one value instead of juggling combinations of booleans.
+ */
+export type DocumentEditorStatus = "loading" | "idle" | "dirty" | "saving";
 
 interface UseDocumentEditorProps {
   documentId: string;
 }
 
 /**
- * Central state manager for the document editor.
+ * Core hook that manages the full lifecycle of document editing:
+ * local state, server sync, dirty detection via checksum, and interval-based auto-save.
  *
- * Owns local content state, dirty tracking (via checksum comparison with the
- * server), and two save strategies:
- *  1. Explicit save    – `save()`, for user-initiated saves (e.g. button click).
- *  2. Periodic fallback – interval that auto-saves if dirty, as a safety net
- *                         so edits are never silently lost.
- *
- * `updateContent` only mutates local state and never triggers network requests.
+ * Title and content follow different save strategies:
+ * - Title: saved immediately on blur / Enter (fire-and-forget, no dirty tracking).
+ * - Content: tracked via checksum for dirty detection, saved on blur / button click,
+ *   and also auto-saved after the user goes idle.
  */
 export function useDocumentEditor({ documentId }: UseDocumentEditorProps) {
-  // Guards one-time initialisation per document (see seed effect below).
-  const initializedRef = useRef(false);
-
-  // Timestamp of the last content edit; used by auto-save to detect idle.
-  const contentLastEditedAtRef = useRef(0);
-
-  // Refs that mirror the latest React state so the auto-save interval
-  // callback always reads fresh values without being in its dep array
-  // (which would cause the interval to be torn down and recreated).
-  const contentRef = useRef("");
-  const isDirtyRef = useRef(false);
-
-  const { mutate: saveDocumentContent, isPending: isSaving } =
-    useSaveDocumentContent();
+  // ── External hooks ──────────────────────────────────────────────────
+  const { mutate: saveDocument, isPending: isSaving } = useSaveDocument();
   const { data: serverDocument, isLoading } = useGetDocument(documentId);
 
+  // ── State ───────────────────────────────────────────────────────────
+  const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
-  // Keep contentRef in sync with the latest content state every render.
+  // ── Refs ────────────────────────────────────────────────────────────
+  const initializedRef = useRef(false);
+  const contentLastEditedAtRef = useRef(0);
+  const autoSaveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
+    null,
+  );
+  // Mirrors of state for use inside interval/callback closures to avoid stale reads.
+  const contentRef = useRef("");
   contentRef.current = content;
+  const isDirtyRef = useRef(false);
 
-  // When the user navigates to a different document, reset the
-  // initialisation guard so the seed effect below runs again.
-  useEffect(() => {
-    initializedRef.current = false;
-  }, [documentId]);
+  // ── Derived values ──────────────────────────────────────────────────
 
-  // Seed local state from the server document exactly once per document.
-  // Subsequent query refetches (e.g. after a save invalidation) are
-  // intentionally ignored so the user's in-progress edits aren't overwritten.
-  useEffect(() => {
-    if (serverDocument && !initializedRef.current) {
-      setContent(serverDocument.content ?? "");
-      initializedRef.current = true;
-    }
-  }, [serverDocument]);
-
-  // Dirty = local content checksum differs from the last persisted checksum.
-  // Recomputed whenever content or the server document changes.
+  // Dirty detection: compare local content checksum against the server's stored checksum.
+  // Empty content is treated as null to match a freshly-created document (checksum is null).
   const isDirty = useMemo(() => {
     if (!serverDocument) return false;
-    return computeChecksum(content) !== serverDocument.checksum;
+    const localChecksum = content ? computeChecksum(content) : null;
+    return localChecksum !== serverDocument.checksum;
   }, [serverDocument, content]);
 
-  // Keep isDirtyRef in sync so the interval callback sees the latest value.
   isDirtyRef.current = isDirty;
 
-  // Updates local content state and records the edit timestamp.
-  // Does NOT trigger a network request – saving is handled separately.
+  // Derive a single status enum from the underlying boolean flags.
+  // Order matters: saving takes precedence over dirty (optimistic UI),
+  // and loading takes precedence over everything.
+  const status: DocumentEditorStatus = (() => {
+    if (isLoading) return "loading";
+    if (isSaving) return "saving";
+    if (isDirty) return "dirty";
+    return "idle";
+  })();
+
+  // ── Callbacks ───────────────────────────────────────────────────────
+
   const updateContent = useCallback((next: string) => {
     setContent(next);
-    // Eagerly update the ref so a save triggered in the same tick
-    // (e.g. blur → save) reads the latest value.
     contentRef.current = next;
     contentLastEditedAtRef.current = Date.now();
   }, []);
 
-  // Handle for the auto-save setInterval, stored in a ref so that
-  // manual saves can clear + restart it to avoid back-to-back saves.
-  const autoSaveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
-    null,
-  );
-
-  // (Re)starts the periodic auto-save interval.
-  // Clears any existing interval first so there is never more than one.
+  // Polls on a fixed interval; only fires the actual save when the user has been
+  // idle for IDLE_THRESHOLD_MS *and* content is dirty. Restarting the interval
+  // on each manual save prevents the two from overlapping.
   const startAutoSaveInterval = useCallback(() => {
     if (autoSaveIntervalRef.current) {
       clearInterval(autoSaveIntervalRef.current);
     }
 
     autoSaveIntervalRef.current = setInterval(() => {
-      // Skip if the user is still actively typing to avoid saving
-      // mid-keystroke and causing unnecessary re-renders.
       const idleMs = Date.now() - contentLastEditedAtRef.current;
       if (idleMs < IDLE_THRESHOLD_MS) return;
 
-      // Only save when there are unsaved changes.
       if (isDirtyRef.current) {
-        saveDocumentContent({
-          id: documentId,
-          content: contentRef.current,
-        });
+        saveDocument({ id: documentId, content: contentRef.current });
       }
     }, AUTO_SAVE_INTERVAL_MS);
-  }, [saveDocumentContent, documentId]);
+  }, [saveDocument, documentId]);
 
-  // Explicit save – for user-initiated actions (e.g. Save button, Ctrl+S).
+  // Manual save: triggered by the Save button or content textarea blur.
+  // Also resets the auto-save timer to avoid a duplicate save right after.
   const save = useCallback(() => {
-    // Prevent concurrent save requests.
     if (isSaving) return;
-
-    saveDocumentContent({
-      id: documentId,
-      content: contentRef.current,
-    });
-
-    // Reset the auto-save timer so the next tick is a full interval away,
-    // preventing a redundant auto-save right after a manual one.
+    saveDocument({ id: documentId, content: contentRef.current });
     startAutoSaveInterval();
-  }, [saveDocumentContent, isSaving, documentId, startAutoSaveInterval]);
+  }, [isSaving, saveDocument, documentId, startAutoSaveInterval]);
 
-  // Bootstrap the auto-save interval once the server document is loaded.
-  // Tears down the interval on unmount or when deps change.
+  // Title is saved independently from content — no dirty tracking needed.
+  // Empty strings are normalized to null so the DB stores NULL for untitled docs.
+  const saveTitle = useCallback(
+    (newTitle: string) => {
+      setTitle(newTitle);
+      if (isSaving) return;
+      saveDocument({ id: documentId, title: newTitle.trim() || null });
+    },
+    [isSaving, documentId, saveDocument],
+  );
+
+  // ── Effects ─────────────────────────────────────────────────────────
+
+  // Reset initialization flag when switching documents so the next fetch hydrates local state.
   useEffect(() => {
-    // Don't start auto-saving until we have server data to compare against.
+    initializedRef.current = false;
+  }, [documentId]);
+
+  // Hydrate local state from server data exactly once per document.
+  useEffect(() => {
+    if (serverDocument && !initializedRef.current) {
+      setTitle(serverDocument.title ?? "");
+      setContent(serverDocument.content ?? "");
+      initializedRef.current = true;
+    }
+  }, [serverDocument]);
+
+  // Start the auto-save interval once the document is loaded; clean up on unmount.
+  useEffect(() => {
     if (!serverDocument) return;
 
     startAutoSaveInterval();
@@ -141,12 +141,15 @@ export function useDocumentEditor({ documentId }: UseDocumentEditorProps) {
     };
   }, [serverDocument, startAutoSaveInterval]);
 
+  // ── Return ──────────────────────────────────────────────────────────
+
   return {
+    title,
+    setTitle,
     content,
     updateContent,
-    isDirty,
-    isSaving,
-    isLoading,
+    status,
     save,
+    saveTitle,
   };
 }

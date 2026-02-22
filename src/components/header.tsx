@@ -24,18 +24,14 @@ function getFullBreadcrumbs(
   }
 
   if (normalizedPath === "/editor") {
-    return [{ label: "Documents" }];
+    return [{ label: "Editor" }];
   }
 
   if (/^\/editor\/documents\/.+/.test(normalizedPath)) {
     return [
-      { label: "Documents", path: "/editor" },
+      { label: "Editor", path: "/editor" },
       { label: document?.title ?? "Document" },
     ];
-  }
-
-  if (normalizedPath === "/demo/tanstack-query") {
-    return [{ label: "TanStack Query" }];
   }
 
   return [{ label: "Page" }];

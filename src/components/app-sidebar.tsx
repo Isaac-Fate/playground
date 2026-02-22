@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Home, FlaskConical, type LucideIcon } from "lucide-react"
+import { Home, FileText, type LucideIcon } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
 import { AppSidebarHeader } from "@/components/app-sidebar-header"
@@ -14,28 +14,11 @@ export interface NavItem {
   title: string
   url: string
   icon?: LucideIcon
-  isActive?: boolean
-  items?: { title: string; url: string }[]
 }
 
 const navItems: NavItem[] = [
-  {
-    title: "Home",
-    url: "/",
-    icon: Home,
-  },
-  {
-    title: "Demos",
-    url: "#",
-    icon: FlaskConical,
-    isActive: true,
-    items: [
-      {
-        title: "Minimal Editor",
-        url: "/editor",
-      },
-    ],
-  },
+  { title: "Home", url: "/", icon: Home },
+  { title: "Editor", url: "/editor", icon: FileText },
 ]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

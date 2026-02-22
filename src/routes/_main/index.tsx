@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
-import { FileText, FlaskConical, ArrowRight } from "lucide-react"
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { FileText, FlaskConical, ArrowRight } from "lucide-react";
 
-export const Route = createFileRoute("/_main/")({ component: HomePage })
+export const Route = createFileRoute("/_main/")({ component: HomePage });
 
 const demos = [
   {
@@ -12,12 +12,11 @@ const demos = [
     icon: FileText,
     tags: ["DOM", "contentEditable", "Selection API"],
   },
-]
+];
 
 function HomePage() {
   return (
-    <main className="flex-1 p-6 md:p-10">
-      <div className="mx-auto max-w-4xl space-y-10">
+    <div className="space-y-10">
         <section className="space-y-3">
           <div className="flex items-center gap-3">
             <div className="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-lg">
@@ -46,7 +45,7 @@ function HomePage() {
                     <demo.icon className="size-5" />
                   </div>
                   <div className="space-y-1.5">
-                    <h3 className="font-semibold leading-none">
+                    <h3 className="leading-none font-semibold">
                       {demo.title}
                       <ArrowRight className="ml-1 inline-block size-4 opacity-0 transition-opacity group-hover:opacity-100" />
                     </h3>
@@ -69,7 +68,6 @@ function HomePage() {
             ))}
           </div>
         </section>
-      </div>
-    </main>
-  )
+    </div>
+  );
 }
