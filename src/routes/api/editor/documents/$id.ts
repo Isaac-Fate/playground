@@ -1,18 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { eq } from "drizzle-orm";
 import { db } from "@/server/db";
-import { documents } from "@/server/db/schema";
+import { documentsTable } from "@/server/db/schema";
 import { computeChecksum } from "@/lib/checksum";
 
 export const Route = createFileRoute("/api/editor/documents/$id")({
   server: {
     handlers: {
       GET: async ({ params }) => {
-        const doc = db
+        const [doc] = await db
           .select()
-          .from(documents)
-          .where(eq(documents.id, params.id))
-          .get();
+          .from(documentsTable)
+          .where(eq(documentsTable.id, params.id))
+          .limit(1);
         if (!doc) {
           return new Response("Document not found", { status: 404 });
         }
@@ -20,45 +20,42 @@ export const Route = createFileRoute("/api/editor/documents/$id")({
       },
       PUT: async ({ params, request }) => {
         const body = await request.json();
-        const existing = db
+        const [existing] = await db
           .select()
-          .from(documents)
-          .where(eq(documents.id, params.id))
-          .get();
+          .from(documentsTable)
+          .where(eq(documentsTable.id, params.id))
+          .limit(1);
         if (!existing) {
           return new Response("Document not found", { status: 404 });
         }
 
         const content =
-          "content" in body ? (body.content || null) : existing.content;
+          "content" in body ? body.content || null : existing.content;
         const title = "title" in body ? (body.title ?? null) : existing.title;
         const checksum = content != null ? computeChecksum(content) : null;
 
-        db.update(documents)
-          .set({
-            title,
-            content,
-            checksum,
-            updatedAt: new Date(),
-          })
-          .where(eq(documents.id, params.id))
-          .run();
+        await db
+          .update(documentsTable)
+          .set({ title, content, checksum })
+          .where(eq(documentsTable.id, params.id));
 
         return Response.json({
           id: params.id,
         });
       },
       DELETE: async ({ params }) => {
-        const existing = db
+        const [existing] = await db
           .select()
-          .from(documents)
-          .where(eq(documents.id, params.id))
-          .get();
+          .from(documentsTable)
+          .where(eq(documentsTable.id, params.id))
+          .limit(1);
         if (!existing) {
           return new Response("Document not found", { status: 404 });
         }
 
-        db.delete(documents).where(eq(documents.id, params.id)).run();
+        await db
+          .delete(documentsTable)
+          .where(eq(documentsTable.id, params.id));
 
         return new Response(null, { status: 204 });
       },

@@ -17,3 +17,6 @@ todos.json
 
 # IDE
 .vscode
+
+# My drafts
+/drafts

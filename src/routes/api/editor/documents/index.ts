@@ -1,22 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { db } from "@/server/db";
-import { documents } from "@/server/db/schema";
+import { documentsTable } from "@/server/db/schema";
 
 export const Route = createFileRoute("/api/editor/documents/")({
   server: {
     handlers: {
       GET: async () => {
-        const rows = db.select().from(documents).all();
+        const rows = await db.select().from(documentsTable);
         return Response.json(rows);
       },
       POST: async () => {
-        const id = crypto.randomUUID();
+        const [row] = await db
+          .insert(documentsTable)
+          .values({ title: null, content: null, checksum: null })
+          .returning({ id: documentsTable.id });
 
-        db.insert(documents)
-          .values({ id, title: null, content: null, checksum: null })
-          .run();
-
-        return Response.json({ id });
+        return Response.json({ id: row!.id });
       },
     },
   },
