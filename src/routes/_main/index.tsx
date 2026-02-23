@@ -1,73 +1,61 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { FileText, FlaskConical, ArrowRight } from "lucide-react";
+import { FileText, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_main/")({ component: HomePage });
 
 const demos = [
   {
-    title: "Minimal Editor",
-    description:
-      "A simple rich-text editor built from scratch using contentEditable, demonstrating DOM manipulation, selection API, and keyboard shortcuts.",
+    title: "Document Editor",
+    description: "Plain text editor with auto-save.",
     href: "/editor",
     icon: FileText,
-    tags: ["DOM", "contentEditable", "Selection API"],
   },
 ];
 
 function HomePage() {
   return (
-    <div className="space-y-10">
-        <section className="space-y-3">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-lg">
-              <FlaskConical className="size-5" />
-            </div>
-            <h1 className="text-3xl font-bold tracking-tight">Playground</h1>
-          </div>
-          <p className="text-muted-foreground max-w-2xl text-lg">
-            A space for demonstrating and experimenting with web development
-            concepts. Each demo is a self-contained example you can explore,
-            modify, and learn from.
+    <div className="flex min-h-[calc(100vh-8rem)] flex-col">
+      {/* Hero */}
+      <section className="flex flex-1 flex-col justify-center py-16 md:py-24">
+        <div className="space-y-6">
+          <h1 className="text-4xl font-light tracking-tight text-foreground md:text-5xl">
+            Playground
+          </h1>
+          <p className="max-w-xl text-lg font-normal leading-relaxed text-muted-foreground">
+            A space for experimenting with web development concepts. Each demo
+            is self-contained—explore, modify, and learn.
           </p>
-        </section>
+        </div>
+      </section>
 
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold">Demos</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {demos.map((demo) => (
-              <Link
-                key={demo.href}
-                to={demo.href}
-                className="border-border hover:border-primary/40 hover:bg-accent/50 group rounded-xl border p-5 transition-all"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary flex size-10 shrink-0 items-center justify-center rounded-lg transition-colors">
-                    <demo.icon className="size-5" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <h3 className="leading-none font-semibold">
-                      {demo.title}
-                      <ArrowRight className="ml-1 inline-block size-4 opacity-0 transition-opacity group-hover:opacity-100" />
-                    </h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      {demo.description}
-                    </p>
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      {demo.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="bg-muted text-muted-foreground rounded-md px-2 py-0.5 text-xs"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+      {/* Demos */}
+      <section className="border-border/60 border-t pt-12">
+        <h2 className="mb-6 text-xs font-medium uppercase tracking-widest text-muted-foreground">
+          Demos
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {demos.map((demo) => (
+            <Link
+              key={demo.href}
+              to={demo.href}
+              className="group flex items-start gap-4 rounded-lg p-4 transition-colors hover:bg-muted/40"
+            >
+              <div className="text-muted-foreground shrink-0 transition-colors group-hover:text-foreground">
+                <demo.icon className="size-5" strokeWidth={1.5} />
+              </div>
+              <div className="min-w-0 flex-1 space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-medium text-foreground">{demo.title}</h3>
+                  <ArrowRight className="size-3.5 shrink-0 text-muted-foreground opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
                 </div>
-              </Link>
-            ))}
-          </div>
-        </section>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {demo.description}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

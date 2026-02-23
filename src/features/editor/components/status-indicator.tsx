@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import {
   Loader2Icon,
   CheckCircle2Icon,
@@ -14,32 +13,33 @@ export function StatusIndicator({ status }: Props) {
   switch (status) {
     case "saving":
       return (
-        <Badge variant="secondary" className="gap-1.5" aria-live="polite">
-          <Loader2Icon className="size-3 animate-spin" aria-hidden />
+        <span
+          className="text-muted-foreground flex items-center gap-1.5 text-xs"
+          aria-live="polite"
+        >
+          <Loader2Icon className="size-3 animate-spin" aria-hidden strokeWidth={1.5} />
           Saving...
-        </Badge>
+        </span>
       );
     case "dirty":
       return (
-        <Badge
-          variant="outline"
-          className="gap-1.5 border-amber-500/50 text-amber-600 dark:text-amber-500"
+        <span
+          className="text-muted-foreground flex items-center gap-1.5 text-xs"
           role="status"
         >
-          <CircleDotIcon className="size-3" aria-hidden />
-          Unsaved changes
-        </Badge>
+          <CircleDotIcon className="size-3" aria-hidden strokeWidth={1.5} />
+          Unsaved
+        </span>
       );
     case "idle":
       return (
-        <Badge
-          variant="outline"
-          className="gap-1.5 border-green-500/30 text-green-600 dark:text-green-500"
+        <span
+          className="text-muted-foreground flex items-center gap-1.5 text-xs"
           role="status"
         >
-          <CheckCircle2Icon className="size-3" aria-hidden />
+          <CheckCircle2Icon className="size-3" aria-hidden strokeWidth={1.5} />
           Saved
-        </Badge>
+        </span>
       );
     default:
       return null;

@@ -31,8 +31,8 @@ export function DocumentEditor({ documentId }: { documentId: string }) {
 
   if (status === "loading") {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2Icon className="text-muted-foreground size-6 animate-spin" />
+      <div className="flex items-center justify-center py-16">
+        <Loader2Icon className="text-muted-foreground size-6 animate-spin" strokeWidth={1.5} />
       </div>
     );
   }
@@ -40,7 +40,7 @@ export function DocumentEditor({ documentId }: { documentId: string }) {
   const isSaving = status === "saving";
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-8">
       <Input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
@@ -49,32 +49,33 @@ export function DocumentEditor({ documentId }: { documentId: string }) {
           if (e.key === "Enter") e.currentTarget.blur();
         }}
         placeholder="Untitled"
-        className="placeholder:text-muted-foreground/60 border-none px-0 text-2xl! font-bold tracking-tight shadow-none placeholder:font-normal placeholder:italic focus-visible:ring-0"
+        className="placeholder:text-muted-foreground/60 border-none px-0 text-3xl font-light tracking-tight shadow-none placeholder:font-normal placeholder:italic focus-visible:ring-0"
       />
 
       <Textarea
         value={content}
         onChange={(e) => updateContent(e.target.value)}
         onBlur={save}
-        placeholder="Start typing here..."
-        className="h-[200px] resize-none"
+        placeholder="Start typing..."
+        className="min-h-[280px] resize-none border-none px-0 text-base leading-relaxed shadow-none placeholder:text-muted-foreground/60 focus-visible:ring-0"
       />
 
-      <div className="flex w-full items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-4 border-t border-border/60 pt-6">
         <StatusIndicator status={status} />
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <DeleteDocumentDialog documentId={documentId} disabled={isSaving} />
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={save}
             disabled={isSaving || !isDirty}
+            className="text-muted-foreground hover:text-foreground"
           >
             {isSaving ? (
-              <Loader2Icon className="size-4 animate-spin" />
+              <Loader2Icon className="size-4 animate-spin" strokeWidth={1.5} />
             ) : (
-              <SaveIcon className="size-4" />
+              <SaveIcon className="size-4" strokeWidth={1.5} />
             )}
             Save
           </Button>

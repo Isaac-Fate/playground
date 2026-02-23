@@ -25,11 +25,11 @@ export function DeleteDocumentDialog({ documentId, disabled }: Props) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="outline" size="sm" disabled={disabled}>
+        <Button variant="ghost" size="sm" disabled={disabled} className="text-muted-foreground hover:text-foreground">
           {isDeleting ? (
-            <Loader2Icon className="size-4 animate-spin" />
+            <Loader2Icon className="size-4 animate-spin" strokeWidth={1.5} />
           ) : (
-            <Trash2Icon className="size-4" />
+            <Trash2Icon className="size-4" strokeWidth={1.5} />
           )}
           Delete
         </Button>

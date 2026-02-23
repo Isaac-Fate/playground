@@ -8,11 +8,5 @@ export const Route = createFileRoute("/_main/editor/documents/$id")({
 function DocumentEditorPage() {
   const { id } = Route.useParams();
 
-  return (
-    <main className="flex flex-1 flex-col gap-4 p-6 md:p-10">
-      <div className="mx-auto w-full max-w-4xl">
-        <DocumentEditor documentId={id} />
-      </div>
-    </main>
-  );
+  return <DocumentEditor documentId={id} />;
 }
