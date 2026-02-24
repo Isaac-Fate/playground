@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { FileText, ArrowRight } from "lucide-react";
+import { FileText, Timer, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_main/")({ component: HomePage });
 
@@ -10,11 +10,17 @@ const demos = [
     href: "/editor",
     icon: FileText,
   },
+  {
+    title: "Stopwatch",
+    description: "useReducer + state machine pattern.",
+    href: "/stopwatch",
+    icon: Timer,
+  },
 ];
 
 function HomePage() {
   return (
-    <div className="flex min-h-[calc(100vh-8rem)] flex-col">
+    <div className="flex flex-col">
       {/* Hero */}
       <section className="flex flex-1 flex-col justify-center py-16 md:py-24">
         <div className="space-y-6">

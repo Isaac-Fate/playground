@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as MainRouteImport } from './routes/_main'
 import { Route as MainIndexRouteImport } from './routes/_main/index'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
+import { Route as MainStopwatchIndexRouteImport } from './routes/_main/stopwatch/index'
 import { Route as MainEditorIndexRouteImport } from './routes/_main/editor/index'
 import { Route as ApiEditorDocumentsIndexRouteImport } from './routes/api/editor/documents/index'
 import { Route as ApiEditorDocumentsIdRouteImport } from './routes/api/editor/documents/$id'
@@ -30,6 +31,11 @@ const ApiHealthRoute = ApiHealthRouteImport.update({
   id: '/api/health',
   path: '/api/health',
   getParentRoute: () => rootRouteImport,
+} as any)
+const MainStopwatchIndexRoute = MainStopwatchIndexRouteImport.update({
+  id: '/stopwatch/',
+  path: '/stopwatch/',
+  getParentRoute: () => MainRoute,
 } as any)
 const MainEditorIndexRoute = MainEditorIndexRouteImport.update({
   id: '/editor/',
@@ -56,6 +62,7 @@ export interface FileRoutesByFullPath {
   '/': typeof MainIndexRoute
   '/api/health': typeof ApiHealthRoute
   '/editor/': typeof MainEditorIndexRoute
+  '/stopwatch/': typeof MainStopwatchIndexRoute
   '/editor/documents/$id': typeof MainEditorDocumentsIdRoute
   '/api/editor/documents/$id': typeof ApiEditorDocumentsIdRoute
   '/api/editor/documents/': typeof ApiEditorDocumentsIndexRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByTo {
   '/api/health': typeof ApiHealthRoute
   '/': typeof MainIndexRoute
   '/editor': typeof MainEditorIndexRoute
+  '/stopwatch': typeof MainStopwatchIndexRoute
   '/editor/documents/$id': typeof MainEditorDocumentsIdRoute
   '/api/editor/documents/$id': typeof ApiEditorDocumentsIdRoute
   '/api/editor/documents': typeof ApiEditorDocumentsIndexRoute
@@ -74,6 +82,7 @@ export interface FileRoutesById {
   '/api/health': typeof ApiHealthRoute
   '/_main/': typeof MainIndexRoute
   '/_main/editor/': typeof MainEditorIndexRoute
+  '/_main/stopwatch/': typeof MainStopwatchIndexRoute
   '/_main/editor/documents/$id': typeof MainEditorDocumentsIdRoute
   '/api/editor/documents/$id': typeof ApiEditorDocumentsIdRoute
   '/api/editor/documents/': typeof ApiEditorDocumentsIndexRoute
@@ -84,6 +93,7 @@ export interface FileRouteTypes {
     | '/'
     | '/api/health'
     | '/editor/'
+    | '/stopwatch/'
     | '/editor/documents/$id'
     | '/api/editor/documents/$id'
     | '/api/editor/documents/'
@@ -92,6 +102,7 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/'
     | '/editor'
+    | '/stopwatch'
     | '/editor/documents/$id'
     | '/api/editor/documents/$id'
     | '/api/editor/documents'
@@ -101,6 +112,7 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/_main/'
     | '/_main/editor/'
+    | '/_main/stopwatch/'
     | '/_main/editor/documents/$id'
     | '/api/editor/documents/$id'
     | '/api/editor/documents/'
@@ -136,6 +148,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_main/stopwatch/': {
+      id: '/_main/stopwatch/'
+      path: '/stopwatch'
+      fullPath: '/stopwatch/'
+      preLoaderRoute: typeof MainStopwatchIndexRouteImport
+      parentRoute: typeof MainRoute
+    }
     '/_main/editor/': {
       id: '/_main/editor/'
       path: '/editor'
@@ -170,12 +189,14 @@ declare module '@tanstack/react-router' {
 interface MainRouteChildren {
   MainIndexRoute: typeof MainIndexRoute
   MainEditorIndexRoute: typeof MainEditorIndexRoute
+  MainStopwatchIndexRoute: typeof MainStopwatchIndexRoute
   MainEditorDocumentsIdRoute: typeof MainEditorDocumentsIdRoute
 }
 
 const MainRouteChildren: MainRouteChildren = {
   MainIndexRoute: MainIndexRoute,
   MainEditorIndexRoute: MainEditorIndexRoute,
+  MainStopwatchIndexRoute: MainStopwatchIndexRoute,
   MainEditorDocumentsIdRoute: MainEditorDocumentsIdRoute,
 }
 

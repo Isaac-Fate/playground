@@ -2,19 +2,19 @@ import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
-} from "@tanstack/react-router"
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
-import { TanStackDevtools } from "@tanstack/react-devtools"
+} from "@tanstack/react-router";
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { TanStackDevtools } from "@tanstack/react-devtools";
 
-import TanStackQueryProvider from "../integrations/tanstack-query/root-provider"
-import TanStackQueryDevtools from "../integrations/tanstack-query/devtools"
+import TanStackQueryProvider from "../integrations/tanstack-query/root-provider";
+import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 
-import appCss from "../styles.css?url"
+import appCss from "../styles.css?url";
 
-import type { QueryClient } from "@tanstack/react-query"
+import type { QueryClient } from "@tanstack/react-query";
 
 interface MyRouterContext {
-  queryClient: QueryClient
+  queryClient: QueryClient;
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
@@ -27,7 +27,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     links: [{ rel: "stylesheet", href: appCss }],
   }),
   shellComponent: RootDocument,
-})
+});
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
@@ -35,7 +35,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body className="flex h-dvh flex-col overflow-hidden">
         <TanStackQueryProvider>
           {children}
 
@@ -53,5 +53,5 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
-  )
+  );
 }

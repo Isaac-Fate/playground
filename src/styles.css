@@ -136,3 +136,10 @@ code {
     @apply bg-background text-foreground;
   }
 }
+
+:root {
+  --header-height: 4rem;
+  --header-height-collapsed: 3rem;
+  --main-height: calc(100vh - var(--header-height));
+  --main-height-collapsed: calc(100vh - var(--header-height-collapsed));
+}

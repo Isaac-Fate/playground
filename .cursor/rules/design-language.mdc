@@ -1,0 +1,94 @@
+---
+description: Design language for Playground UI — minimal, editorial style
+globs: "**/*.tsx,**/*.css"
+alwaysApply: false
+---
+
+# Playground Design Language
+
+## Philosophy
+
+Playground embraces **essential design**: content-first, restraint over decoration. The interface should recede so the user's work takes center stage. Every element earns its place—nothing gratuitous. Typography, spacing, and interaction exist to guide attention and reduce cognitive load. The aesthetic is editorial: clear hierarchy, ample negative space, and a calm, professional tone. Think Notion, Linear, or a well-designed document editor.
+
+## Design Principles
+
+1. **Restraint** — Remove everything non-essential. If it doesn't serve clarity or function, omit it.
+2. **Hierarchy** — Use size, weight, and color to establish clear visual order. The eye should know where to go first.
+3. **Whitespace as structure** — Negative space is an active design element. It defines rhythm, improves legibility, and reduces noise.
+4. **Unobtrusive interaction** — Hover and focus states should be subtle. The interface supports; it does not compete.
+5. **Consistency** — Patterns repeat. Same treatments for same roles. The system feels unified and intentional.
+
+## Typography
+
+**Hierarchy** — Establish clear levels of importance through scale and weight.
+
+- **Page titles**: `font-light`, `tracking-tight`, `text-3xl`–`text-5xl`. Light weight creates an editorial, approachable feel.
+- **Body copy**: `leading-relaxed`. Generous line height aids reading.
+- **Secondary text**: `text-muted-foreground`. Lower contrast signals supporting information.
+- **Section labels**: `text-xs font-medium uppercase tracking-widest text-muted-foreground`. Small caps create structure without visual weight.
+- **Placeholders**: `placeholder:italic placeholder:text-muted-foreground/60`. Clearly distinguished from real content.
+
+**Rationale**: Typography should feel invisible—it serves the content. Sufficient contrast between levels prevents hierarchy from collapsing.
+
+## Color
+
+**Restraint** — A limited palette reduces noise and focuses attention.
+
+- **Primary**: `foreground` and `muted-foreground`. Avoid accent colors except for destructive actions.
+- **Borders**: `border-border/60`. Subtle; they separate without shouting.
+- **Interactive states**: `hover:bg-muted/40`, `hover:text-foreground`. Soft feedback, no harsh transitions.
+
+**Rationale**: Color is used for hierarchy and state, not decoration. Muted tones keep the interface calm.
+
+## Space & Layout
+
+**Proportion** — Space creates rhythm and defines relationships.
+
+- **Section spacing**: `gap-8` between major sections. Consistent rhythm aids scanning.
+- **Hero / empty states**: `py-16`–`py-24`. Generous vertical space signals importance and reduces crowding.
+- **Section dividers**: `border-t border-border/60 pt-6`. Light separation without heavy lines.
+- **Container**: `max-w-4xl`. Constrained width improves readability.
+
+**Rationale**: Whitespace is not empty—it organizes. More space around an element signals greater importance.
+
+## Components
+
+**Essential treatment** — Components should feel integrated, not applied.
+
+- **Inputs / Textarea**: `border-none`, `shadow-none`, `focus-visible:ring-0`. Borderless fields feel like part of the page, not inserted objects.
+- **Buttons**: `variant="ghost"`, `text-muted-foreground hover:text-foreground`. Secondary actions recede until needed.
+- **Status indicators**: Plain text + icon (`text-xs`), not Badge. Low visual weight for metadata.
+- **List items**: No borders. `hover:bg-muted/40` for interactive rows. Clean, scannable lists.
+- **Empty states**: `border-dashed border-border/60`, centered, `py-16`. Inviting, not alarming.
+
+**Rationale**: Components should feel like they belong. Avoid heavy borders and shadows that create visual clutter.
+
+## Icons & Motion
+
+- **Icons**: `strokeWidth={1.5}`. Lighter stroke weight matches the overall restraint.
+- **Motion**: `transition-colors` for hover. Subtle arrow: `group-hover:translate-x-0.5 group-hover:opacity-100`. Motion should feel responsive, not decorative.
+
+## Implementation Reference
+
+```tsx
+// Page title — editorial weight
+<h1 className="text-3xl font-light tracking-tight">Document Editor</h1>
+
+// Section label — structural, low weight
+<h2 className="text-xs font-medium uppercase tracking-widest text-muted-foreground">Demos</h2>
+
+// Interactive list item — clean, no borders
+<Link className="group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/40">
+  <FileText className="text-muted-foreground size-4 shrink-0 transition-colors group-hover:text-foreground" strokeWidth={1.5} />
+  <span className="truncate font-medium">{title}</span>
+</Link>
+
+// Borderless input — integrated into page
+<Input className="border-none px-0 text-3xl font-light tracking-tight shadow-none focus-visible:ring-0" />
+
+// Ghost action — recedes until needed
+<Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+  <SaveIcon className="size-4" strokeWidth={1.5} />
+  Save
+</Button>
+```
