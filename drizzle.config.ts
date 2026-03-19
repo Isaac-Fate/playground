@@ -1,8 +1,13 @@
 import { config } from "dotenv";
 import { defineConfig } from "drizzle-kit";
 
-// Load dotenv file
-config({ path: ".env.local" });
+// Shell env vars (e.g. DATABASE_URL=prod pnpm db:migrate) take precedence
+const envSetByShell = !!process.env.DATABASE_URL;
+config();
+config({
+  path: ".env.local",
+  override: !envSetByShell, // don't overwrite if user passed from shell
+});
 
 export default defineConfig({
   out: "./drizzle",
