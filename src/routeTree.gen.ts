@@ -13,7 +13,9 @@ import { Route as MainRouteImport } from './routes/_main'
 import { Route as MainIndexRouteImport } from './routes/_main/index'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as MainStopwatchIndexRouteImport } from './routes/_main/stopwatch/index'
+import { Route as MainLikeDemoIndexRouteImport } from './routes/_main/like-demo/index'
 import { Route as MainEditorIndexRouteImport } from './routes/_main/editor/index'
+import { Route as ApiLikesSlugRouteImport } from './routes/api/likes/$slug'
 import { Route as ApiEditorDocumentsIndexRouteImport } from './routes/api/editor/documents/index'
 import { Route as ApiEditorDocumentsIdRouteImport } from './routes/api/editor/documents/$id'
 import { Route as MainEditorDocumentsIdRouteImport } from './routes/_main/editor/documents/$id'
@@ -37,10 +39,20 @@ const MainStopwatchIndexRoute = MainStopwatchIndexRouteImport.update({
   path: '/stopwatch/',
   getParentRoute: () => MainRoute,
 } as any)
+const MainLikeDemoIndexRoute = MainLikeDemoIndexRouteImport.update({
+  id: '/like-demo/',
+  path: '/like-demo/',
+  getParentRoute: () => MainRoute,
+} as any)
 const MainEditorIndexRoute = MainEditorIndexRouteImport.update({
   id: '/editor/',
   path: '/editor/',
   getParentRoute: () => MainRoute,
+} as any)
+const ApiLikesSlugRoute = ApiLikesSlugRouteImport.update({
+  id: '/api/likes/$slug',
+  path: '/api/likes/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiEditorDocumentsIndexRoute = ApiEditorDocumentsIndexRouteImport.update({
   id: '/api/editor/documents/',
@@ -61,7 +73,9 @@ const MainEditorDocumentsIdRoute = MainEditorDocumentsIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof MainIndexRoute
   '/api/health': typeof ApiHealthRoute
+  '/api/likes/$slug': typeof ApiLikesSlugRoute
   '/editor/': typeof MainEditorIndexRoute
+  '/like-demo/': typeof MainLikeDemoIndexRoute
   '/stopwatch/': typeof MainStopwatchIndexRoute
   '/editor/documents/$id': typeof MainEditorDocumentsIdRoute
   '/api/editor/documents/$id': typeof ApiEditorDocumentsIdRoute
@@ -70,7 +84,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/api/health': typeof ApiHealthRoute
   '/': typeof MainIndexRoute
+  '/api/likes/$slug': typeof ApiLikesSlugRoute
   '/editor': typeof MainEditorIndexRoute
+  '/like-demo': typeof MainLikeDemoIndexRoute
   '/stopwatch': typeof MainStopwatchIndexRoute
   '/editor/documents/$id': typeof MainEditorDocumentsIdRoute
   '/api/editor/documents/$id': typeof ApiEditorDocumentsIdRoute
@@ -81,7 +97,9 @@ export interface FileRoutesById {
   '/_main': typeof MainRouteWithChildren
   '/api/health': typeof ApiHealthRoute
   '/_main/': typeof MainIndexRoute
+  '/api/likes/$slug': typeof ApiLikesSlugRoute
   '/_main/editor/': typeof MainEditorIndexRoute
+  '/_main/like-demo/': typeof MainLikeDemoIndexRoute
   '/_main/stopwatch/': typeof MainStopwatchIndexRoute
   '/_main/editor/documents/$id': typeof MainEditorDocumentsIdRoute
   '/api/editor/documents/$id': typeof ApiEditorDocumentsIdRoute
@@ -92,7 +110,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/api/health'
+    | '/api/likes/$slug'
     | '/editor/'
+    | '/like-demo/'
     | '/stopwatch/'
     | '/editor/documents/$id'
     | '/api/editor/documents/$id'
@@ -101,7 +121,9 @@ export interface FileRouteTypes {
   to:
     | '/api/health'
     | '/'
+    | '/api/likes/$slug'
     | '/editor'
+    | '/like-demo'
     | '/stopwatch'
     | '/editor/documents/$id'
     | '/api/editor/documents/$id'
@@ -111,7 +133,9 @@ export interface FileRouteTypes {
     | '/_main'
     | '/api/health'
     | '/_main/'
+    | '/api/likes/$slug'
     | '/_main/editor/'
+    | '/_main/like-demo/'
     | '/_main/stopwatch/'
     | '/_main/editor/documents/$id'
     | '/api/editor/documents/$id'
@@ -121,6 +145,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   MainRoute: typeof MainRouteWithChildren
   ApiHealthRoute: typeof ApiHealthRoute
+  ApiLikesSlugRoute: typeof ApiLikesSlugRoute
   ApiEditorDocumentsIdRoute: typeof ApiEditorDocumentsIdRoute
   ApiEditorDocumentsIndexRoute: typeof ApiEditorDocumentsIndexRoute
 }
@@ -155,12 +180,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainStopwatchIndexRouteImport
       parentRoute: typeof MainRoute
     }
+    '/_main/like-demo/': {
+      id: '/_main/like-demo/'
+      path: '/like-demo'
+      fullPath: '/like-demo/'
+      preLoaderRoute: typeof MainLikeDemoIndexRouteImport
+      parentRoute: typeof MainRoute
+    }
     '/_main/editor/': {
       id: '/_main/editor/'
       path: '/editor'
       fullPath: '/editor/'
       preLoaderRoute: typeof MainEditorIndexRouteImport
       parentRoute: typeof MainRoute
+    }
+    '/api/likes/$slug': {
+      id: '/api/likes/$slug'
+      path: '/api/likes/$slug'
+      fullPath: '/api/likes/$slug'
+      preLoaderRoute: typeof ApiLikesSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/editor/documents/': {
       id: '/api/editor/documents/'
@@ -189,6 +228,7 @@ declare module '@tanstack/react-router' {
 interface MainRouteChildren {
   MainIndexRoute: typeof MainIndexRoute
   MainEditorIndexRoute: typeof MainEditorIndexRoute
+  MainLikeDemoIndexRoute: typeof MainLikeDemoIndexRoute
   MainStopwatchIndexRoute: typeof MainStopwatchIndexRoute
   MainEditorDocumentsIdRoute: typeof MainEditorDocumentsIdRoute
 }
@@ -196,6 +236,7 @@ interface MainRouteChildren {
 const MainRouteChildren: MainRouteChildren = {
   MainIndexRoute: MainIndexRoute,
   MainEditorIndexRoute: MainEditorIndexRoute,
+  MainLikeDemoIndexRoute: MainLikeDemoIndexRoute,
   MainStopwatchIndexRoute: MainStopwatchIndexRoute,
   MainEditorDocumentsIdRoute: MainEditorDocumentsIdRoute,
 }
@@ -205,6 +246,7 @@ const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   MainRoute: MainRouteWithChildren,
   ApiHealthRoute: ApiHealthRoute,
+  ApiLikesSlugRoute: ApiLikesSlugRoute,
   ApiEditorDocumentsIdRoute: ApiEditorDocumentsIdRoute,
   ApiEditorDocumentsIndexRoute: ApiEditorDocumentsIndexRoute,
 }

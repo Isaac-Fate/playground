@@ -8,6 +8,13 @@
       "when": 1771858588136,
       "tag": "0000_loose_hairball",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1773896318304,
+      "tag": "0001_melted_magus",
+      "breakpoints": true
     }
   ]
 }

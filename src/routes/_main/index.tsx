@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { FileText, Timer, ArrowRight } from "lucide-react";
+import { FileText, Timer, Heart, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_main/")({ component: HomePage });
 
@@ -15,6 +15,12 @@ const demos = [
     description: "useReducer + state machine pattern.",
     href: "/stopwatch",
     icon: Timer,
+  },
+  {
+    title: "Like Demo",
+    description: "Anonymous like button, no sign-in required.",
+    href: "/like-demo",
+    icon: Heart,
   },
 ];
 
