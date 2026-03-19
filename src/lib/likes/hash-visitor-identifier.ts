@@ -1,5 +1,8 @@
-export async function hashIp(ip: string, salt: string): Promise<string> {
-  const input = `${salt}:${ip}`;
+export async function hashVisitorIdentifier(
+  identifier: string,
+  salt: string,
+): Promise<string> {
+  const input = `${salt}:${identifier}`;
   const encoder = new TextEncoder();
   const data = encoder.encode(input);
   const hashBuffer = await crypto.subtle.digest("SHA-256", data);

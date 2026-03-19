@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { and, eq, sql } from "drizzle-orm";
 import { db } from "@/server/db";
 import { articleLikesTable } from "@/server/db/schema";
-import { getClientIp } from "@/lib/likes/get-client-ip";
-import { hashIp } from "@/lib/likes/hash-ip";
+import { getVisitorIdentifier } from "@/lib/likes/get-visitor-identifier";
+import { hashVisitorIdentifier } from "@/lib/likes/hash-visitor-identifier";
 import { isValidSlug } from "@/lib/likes/validate-slug";
 import {
   withCorsHeaders,
@@ -43,12 +43,12 @@ export const Route = createFileRoute("/api/likes/$slug")({
           return withCorsHeaders(res, origin);
         }
 
-        const ip = getClientIp(request);
-        if (!ip) {
+        const identifier = getVisitorIdentifier(request);
+        if (!identifier) {
           const res = createErrorResponse(
             400,
-            "missing_client_ip",
-            "Could not determine client IP. Like operations require a valid client IP."
+            "missing_visitor_id",
+            "Could not identify visitor. Enable cookies/localStorage or ensure request includes client IP."
           );
           return withCorsHeaders(res, origin);
         }
@@ -64,7 +64,7 @@ export const Route = createFileRoute("/api/likes/$slug")({
         }
 
         try {
-          const ipHash = await hashIp(ip, salt);
+          const visitorHash = await hashVisitorIdentifier(identifier, salt);
 
           const [countResult] = await db
             .select({ count: sql<number>`count(*)::int` })
@@ -79,7 +79,7 @@ export const Route = createFileRoute("/api/likes/$slug")({
             .where(
               and(
                 eq(articleLikesTable.slug, slug),
-                eq(articleLikesTable.ipHash, ipHash)
+                eq(articleLikesTable.visitorHash, visitorHash)
               )
             )
             .limit(1);
@@ -110,12 +110,12 @@ export const Route = createFileRoute("/api/likes/$slug")({
           return withCorsHeaders(res, origin);
         }
 
-        const ip = getClientIp(request);
-        if (!ip) {
+        const identifier = getVisitorIdentifier(request);
+        if (!identifier) {
           const res = createErrorResponse(
             400,
-            "missing_client_ip",
-            "Could not determine client IP. Like operations require a valid client IP."
+            "missing_visitor_id",
+            "Could not identify visitor. Enable cookies/localStorage or ensure request includes client IP."
           );
           return withCorsHeaders(res, origin);
         }
@@ -131,7 +131,7 @@ export const Route = createFileRoute("/api/likes/$slug")({
         }
 
         try {
-          const ipHash = await hashIp(ip, salt);
+          const visitorHash = await hashVisitorIdentifier(identifier, salt);
 
           const [existing] = await db
             .select({ slug: articleLikesTable.slug })
@@ -139,7 +139,7 @@ export const Route = createFileRoute("/api/likes/$slug")({
             .where(
               and(
                 eq(articleLikesTable.slug, slug),
-                eq(articleLikesTable.ipHash, ipHash)
+                eq(articleLikesTable.visitorHash, visitorHash)
               )
             )
             .limit(1);
@@ -150,11 +150,11 @@ export const Route = createFileRoute("/api/likes/$slug")({
               .where(
                 and(
                   eq(articleLikesTable.slug, slug),
-                  eq(articleLikesTable.ipHash, ipHash)
+                  eq(articleLikesTable.visitorHash, visitorHash)
                 )
               );
           } else {
-            await db.insert(articleLikesTable).values({ slug, ipHash });
+            await db.insert(articleLikesTable).values({ slug, visitorHash });
           }
 
           const [countResult] = await db

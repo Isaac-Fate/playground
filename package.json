@@ -17,9 +17,11 @@
     "check": "prettier --write . && eslint --fix",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "db:migrate:dev": "env-cmd -f .env.local drizzle-kit migrate",
+    "db:migrate:prod": "env-cmd -f .env drizzle-kit migrate",
     "db:drop": "drizzle-kit drop",
     "db:seed": "tsx src/server/db/seed.ts",
-    "db:setup": "pnpm db:generate && pnpm db:migrate && pnpm db:seed"
+    "db:setup": "pnpm db:generate && pnpm db:migrate:dev && pnpm db:seed"
   },
   "dependencies": {
     "@libsql/client": "^0.17.0",
@@ -69,6 +71,7 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.0.4",
+    "env-cmd": "^10.1.0",
     "drizzle-kit": "^0.31.9",
     "jsdom": "^27.0.0",
     "prettier": "^3.5.3",

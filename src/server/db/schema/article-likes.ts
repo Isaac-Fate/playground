@@ -4,10 +4,10 @@ export const articleLikesTable = pgTable(
   "article_likes",
   {
     slug: text("slug").notNull(),
-    ipHash: text("ip_hash").notNull(),
+    visitorHash: text("visitor_hash").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
   },
-  (table) => [unique().on(table.slug, table.ipHash)]
+  (table) => [unique().on(table.slug, table.visitorHash)]
 );

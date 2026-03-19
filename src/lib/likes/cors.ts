@@ -36,7 +36,7 @@ function isOriginAllowed(origin: string | null): boolean {
 
 const CORS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Headers": "Content-Type, X-Likes-Visitor-Id",
   "Access-Control-Max-Age": "86400",
 };
 
