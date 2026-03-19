@@ -6,8 +6,7 @@ const PRODUCTION_ALLOWED_DOMAINS = ["isaacfei.com", "isaac-fei.com"];
 
 function isProductionAllowedDomain(hostname: string): boolean {
   return PRODUCTION_ALLOWED_DOMAINS.some(
-    (domain) =>
-      hostname === domain || hostname.endsWith(`.${domain}`)
+    (domain) => hostname === domain || hostname.endsWith(`.${domain}`),
   );
 }
 
@@ -51,7 +50,7 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
 
 export function withCorsHeaders(
   response: Response,
-  origin: string | null
+  origin: string | null,
 ): Response {
   const corsHeaders = getCorsHeaders(origin);
   const newHeaders = new Headers(response.headers);
