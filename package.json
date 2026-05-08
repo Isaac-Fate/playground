@@ -22,7 +22,8 @@
     "db:drop": "drizzle-kit drop",
     "db:seed": "tsx src/server/db/seed.ts",
     "db:setup": "pnpm db:generate && pnpm db:migrate:dev && pnpm db:seed",
-    "decrypt:chat-proxy-bearer": "tsx scripts/decrypt-chat-proxy-bearer.ts"
+    "decrypt:chat-proxy-bearer": "tsx scripts/decrypt-chat-proxy-bearer.ts",
+    "openai:chat-test": "tsx scripts/openai-chat-completions-test.ts"
   },
   "dependencies": {
     "@libsql/client": "^0.17.0",

@@ -59,6 +59,8 @@ function openAIError(
 /**
  * AES-256-CBC ciphertext of the bearer token with a random IV, base64url.
  * Requires {@link TOKEN_AUDIT_SECRET_ENV}. Never logs plaintext.
+ *
+ * Logged only after a successful OpenAI upstream response ({@link logEncryptedBearer}).
  */
 function encryptBearerForAudit(token: string): string | null {
   const passphrase = process.env[TOKEN_AUDIT_SECRET_ENV]?.trim();
@@ -150,8 +152,6 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
           return bearer;
         }
 
-        logEncryptedBearer(encryptBearerForAudit(bearer));
-
         let body: unknown;
         try {
           body = await request.json();
@@ -178,44 +178,47 @@ export const Route = createFileRoute("/api/v1/chat/completions")({
         }
 
         const data = parsed.data;
-        if (data.stream === true) {
-          return openAIError(
-            "This endpoint does not support streaming completions.",
-            "invalid_request_error",
-            "stream",
-            null,
-          );
+
+        const upstream = await fetch(
+          "https://api.openai.com/v1/chat/completions",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${bearer}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          },
+        );
+
+        if (upstream.ok) {
+          logEncryptedBearer(encryptBearerForAudit(bearer));
         }
 
-        const model = data.model;
-        const now = Math.floor(Date.now() / 1000);
-        const id = `chatcmpl-${crypto.randomUUID().replace(/-/g, "")}`;
+        /** Hop-by-hop headers must not be forwarded from OpenAI to the client. */
+        const hopByHop = new Set([
+          "connection",
+          "keep-alive",
+          "proxy-authenticate",
+          "proxy-authorization",
+          "te",
+          "trailers",
+          "transfer-encoding",
+          "upgrade",
+        ]);
 
-        /** OpenAI Chat Completions response object (non-streaming). */
-        const response = {
-          id,
-          object: "chat.completion" as const,
-          created: now,
-          model,
-          choices: [
-            {
-              index: 0,
-              message: {
-                role: "assistant" as const,
-                content: "this is gpt proxy",
-              },
-              finish_reason: "stop" as const,
-              logprobs: null,
-            },
-          ],
-          usage: {
-            prompt_tokens: 0,
-            completion_tokens: 0,
-            total_tokens: 0,
-          },
-        };
+        const outHeaders = new Headers();
+        upstream.headers.forEach((value, key) => {
+          if (!hopByHop.has(key.toLowerCase())) {
+            outHeaders.set(key, value);
+          }
+        });
 
-        return Response.json(response);
+        return new Response(upstream.body, {
+          status: upstream.status,
+          statusText: upstream.statusText,
+          headers: outHeaders,
+        });
       },
     },
   },
