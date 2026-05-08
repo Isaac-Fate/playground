@@ -16,7 +16,9 @@ import { Route as MainStopwatchIndexRouteImport } from './routes/_main/stopwatch
 import { Route as MainLikeDemoIndexRouteImport } from './routes/_main/like-demo/index'
 import { Route as MainEditorIndexRouteImport } from './routes/_main/editor/index'
 import { Route as ApiLikesSlugRouteImport } from './routes/api/likes/$slug'
+import { Route as ApiV1ChatIndexRouteImport } from './routes/api/v1/chat/index'
 import { Route as ApiEditorDocumentsIndexRouteImport } from './routes/api/editor/documents/index'
+import { Route as ApiV1ChatCompletionsRouteImport } from './routes/api/v1/chat/completions'
 import { Route as ApiEditorDocumentsIdRouteImport } from './routes/api/editor/documents/$id'
 import { Route as MainEditorDocumentsIdRouteImport } from './routes/_main/editor/documents/$id'
 
@@ -54,9 +56,19 @@ const ApiLikesSlugRoute = ApiLikesSlugRouteImport.update({
   path: '/api/likes/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1ChatIndexRoute = ApiV1ChatIndexRouteImport.update({
+  id: '/api/v1/chat/',
+  path: '/api/v1/chat/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiEditorDocumentsIndexRoute = ApiEditorDocumentsIndexRouteImport.update({
   id: '/api/editor/documents/',
   path: '/api/editor/documents/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1ChatCompletionsRoute = ApiV1ChatCompletionsRouteImport.update({
+  id: '/api/v1/chat/completions',
+  path: '/api/v1/chat/completions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiEditorDocumentsIdRoute = ApiEditorDocumentsIdRouteImport.update({
@@ -79,7 +91,9 @@ export interface FileRoutesByFullPath {
   '/stopwatch/': typeof MainStopwatchIndexRoute
   '/editor/documents/$id': typeof MainEditorDocumentsIdRoute
   '/api/editor/documents/$id': typeof ApiEditorDocumentsIdRoute
+  '/api/v1/chat/completions': typeof ApiV1ChatCompletionsRoute
   '/api/editor/documents/': typeof ApiEditorDocumentsIndexRoute
+  '/api/v1/chat/': typeof ApiV1ChatIndexRoute
 }
 export interface FileRoutesByTo {
   '/api/health': typeof ApiHealthRoute
@@ -90,7 +104,9 @@ export interface FileRoutesByTo {
   '/stopwatch': typeof MainStopwatchIndexRoute
   '/editor/documents/$id': typeof MainEditorDocumentsIdRoute
   '/api/editor/documents/$id': typeof ApiEditorDocumentsIdRoute
+  '/api/v1/chat/completions': typeof ApiV1ChatCompletionsRoute
   '/api/editor/documents': typeof ApiEditorDocumentsIndexRoute
+  '/api/v1/chat': typeof ApiV1ChatIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -103,7 +119,9 @@ export interface FileRoutesById {
   '/_main/stopwatch/': typeof MainStopwatchIndexRoute
   '/_main/editor/documents/$id': typeof MainEditorDocumentsIdRoute
   '/api/editor/documents/$id': typeof ApiEditorDocumentsIdRoute
+  '/api/v1/chat/completions': typeof ApiV1ChatCompletionsRoute
   '/api/editor/documents/': typeof ApiEditorDocumentsIndexRoute
+  '/api/v1/chat/': typeof ApiV1ChatIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -116,7 +134,9 @@ export interface FileRouteTypes {
     | '/stopwatch/'
     | '/editor/documents/$id'
     | '/api/editor/documents/$id'
+    | '/api/v1/chat/completions'
     | '/api/editor/documents/'
+    | '/api/v1/chat/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/api/health'
@@ -127,7 +147,9 @@ export interface FileRouteTypes {
     | '/stopwatch'
     | '/editor/documents/$id'
     | '/api/editor/documents/$id'
+    | '/api/v1/chat/completions'
     | '/api/editor/documents'
+    | '/api/v1/chat'
   id:
     | '__root__'
     | '/_main'
@@ -139,7 +161,9 @@ export interface FileRouteTypes {
     | '/_main/stopwatch/'
     | '/_main/editor/documents/$id'
     | '/api/editor/documents/$id'
+    | '/api/v1/chat/completions'
     | '/api/editor/documents/'
+    | '/api/v1/chat/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -147,7 +171,9 @@ export interface RootRouteChildren {
   ApiHealthRoute: typeof ApiHealthRoute
   ApiLikesSlugRoute: typeof ApiLikesSlugRoute
   ApiEditorDocumentsIdRoute: typeof ApiEditorDocumentsIdRoute
+  ApiV1ChatCompletionsRoute: typeof ApiV1ChatCompletionsRoute
   ApiEditorDocumentsIndexRoute: typeof ApiEditorDocumentsIndexRoute
+  ApiV1ChatIndexRoute: typeof ApiV1ChatIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -201,11 +227,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiLikesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/chat/': {
+      id: '/api/v1/chat/'
+      path: '/api/v1/chat'
+      fullPath: '/api/v1/chat/'
+      preLoaderRoute: typeof ApiV1ChatIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/editor/documents/': {
       id: '/api/editor/documents/'
       path: '/api/editor/documents'
       fullPath: '/api/editor/documents/'
       preLoaderRoute: typeof ApiEditorDocumentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/chat/completions': {
+      id: '/api/v1/chat/completions'
+      path: '/api/v1/chat/completions'
+      fullPath: '/api/v1/chat/completions'
+      preLoaderRoute: typeof ApiV1ChatCompletionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/editor/documents/$id': {
@@ -248,7 +288,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiHealthRoute: ApiHealthRoute,
   ApiLikesSlugRoute: ApiLikesSlugRoute,
   ApiEditorDocumentsIdRoute: ApiEditorDocumentsIdRoute,
+  ApiV1ChatCompletionsRoute: ApiV1ChatCompletionsRoute,
   ApiEditorDocumentsIndexRoute: ApiEditorDocumentsIndexRoute,
+  ApiV1ChatIndexRoute: ApiV1ChatIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
